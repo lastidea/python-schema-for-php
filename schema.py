@@ -94,7 +94,7 @@ def get_schema():
             elif list['type'] == 2:  # 固定时间执行一次
                 onetime_schema(list['schema_time'], list['url'], list['success_return'], list['id'])
 
-        print "------ %s ------" % time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+        print "------ %s  ------" % time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 
 
 @application.route('/schema_log_list', methods=['GET'])
