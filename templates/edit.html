@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block body %}
+    <form action="{{ url_for('edit') }}" method="post" class="form-horizontal ajaxForm">
+        <div class="form-group">
+            <label for="title" class="col-sm-2 control-label"><b>*</b> 任务标题</label>
+            <div class="col-sm-9">
+                <input type="text" name="title" class="form-control" placeholder="标识标题" id="title" value="{{  schema_detail.title }}" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><b>*</b> 任务类型</label>
+            <div class="col-sm-9">
+                <label><input type="radio" name="type" id="type1" value="1" /> 固定时间循环执行</label>
+                <label><input type="radio" name="type" id="type2" value="2" /> 固定时间执行一次</label>
+                <script>
+                    $('#type{{ schema_detail.type }}').attr('checked', 'checked');
+                </script>
+                {% if schema_detail.type == 1 %}
+                    <script>
+                        $(function () {
+                            $('#unit_container').show()
+                        })
+                    </script>
+                {% endif %}
+            </div>
+        </div>
+
+        <div id="unit_container" class="form-group" style="display:none;">
+            <label for="unit" class="col-sm-2 control-label"><b>*</b> 规划类型</label>
+            <div class="col-sm-9">
+                <select name="unit" id="unit">
+                    <option value="">请选择</option>
+                    <option value="1">每小时</option>
+                    <option value="2">每天</option>
+                    <option value="3">每周</option>
+                    <option value="4">每月</option>
+                    <option value="5">每年</option>
+                </select>
+                <script>
+                    $('#unit').val('{{ schema_detail.unit }}');
+                </script>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="schema_time" class="col-sm-2 control-label"><b>*</b> 执行时间</label>
+            <div class="col-sm-9">
+                <input name="schema_time" class="form-control" placeholder="执行时间" id="schema_time" value="{{ schema_detail.schema_time }}" />
+                <p class="help-block">
+                    <b>执行时间按规划的类型不同输入不同.</b>
+                    <ul>
+                        <li>如按每小时循环执行, 输入的时间为: 分钟数, 任何将在此分钟内执行(具体在哪一秒进行执行, 不能确定).
+                            假如录入<u>06</u>(0到59分), 则此任务就会在每小时的第6分钟进行执行;</li>
+                        <li>如按第天循环执行, 输入的时间为每天的哪一分钟进行执行,
+                            假如录入<u>1301</u>(0到23小时), 则此任务就是在每天的13点零1分时执行</li>
+                        <li>如按每周循环执行, 输入为<u>50311</u>, 则此任务在每周5的早上3点11分执行. 依次类推</li>
+                        <li>如果按固定时间执行一次, 输入的时间为<u>201701141709</u>, 则此任务在2017年1月14日17时9分执行一次</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="url" class="col-sm-2 control-label"><b>*</b> 访问URL</label>
+            <div class="col-sm-9">
+                <input name="url" class="form-control" placeholder="URL" id="url" value="{{ schema_detail.url }}" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="success_return" class="col-sm-2 control-label"><b>*</b> 成功返回</label>
+            <div class="col-sm-9">
+                <input name="success_return" class="form-control" placeholder="SUCCESS" id="success_return" value="{{ schema_detail.success_return }}" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text" class="col-sm-2 control-label">备注说明</label>
+            <div class="col-sm-9">
+                <input type="text" name="text" class="form-control" placeholder="备注" id="text" value="{{ schema_detail.text }}" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+                {% if schema_detail.status != 3 %}
+                    <label><input type="radio" name="status" id="status1" value="1" /> 启用</label>
+                    <label><input type="radio" name="status" id="status2" value="2" /> 禁用</label>
+                    <script>
+                        $('#status{{ schema_detail.status }}').attr('checked', 'checked');
+                    </script>
+                {% else %}
+                    <label><input type="radio" name="status" id="status2" value="2" /> 执行完毕</label>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+                <input type="hidden" value="0{{ schema_detail.id }}" name="id" id="id" />
+                <input type="submit" value="提交"  class="btn btn-default" />
+            </div>
+        </div>
+    </form>
+    <script>
+        function callback(data) {
+            if(data.status == 1){
+                if (data.info != '' && typeof(data.info) != 'undefined')  toastr.success(data.info);;
+                //刷新页面
+                parent.location.reload();
+            } else {
+                if (data.info != '' && typeof(data.info) != 'undefined') toastr.error(data.info);
+                else  toastr.error('未定义错误!');
+            }
+        }
+
+        $(function(){
+            $("#type2").on('click', function (){
+                $('#unit_container').hide()
+            });
+
+            $("#type1").on('click', function (){
+                $('#unit_container').show()
+            });
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block body %}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>执行时间</th>
+                <th>执行结果</th>
+                <th>返回数据</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schema_log in schema_log_list %}
+                <tr>
+                    <td>{{ schema_log.run_time | format_time }}</td>
+                    <td>
+                        {% if schema_log.success_or_not == 1 %}
+                            <div class="success">成功</div>
+                        {% elif schema_log.success_or_not == 2 %}
+                            <div class="warning">失败</div>
+                        {% else %}
+                            <div class="info">未执行</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ schema_log.res_string }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3"><b>还没有执行记录</b></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
